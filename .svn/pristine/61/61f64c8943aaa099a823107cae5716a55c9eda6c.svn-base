@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.huifu.configCenter.dal.dao.CIpInfoDAO">
+	<resultMap type="com.huifu.configCenter.dal.model.CIpInfoDO"
+		id="cIpInfoDO">
+		<id property="ipId" column="IP_ID" />
+		<result property="ip" column="IP" />
+		<result property="mac" column="MAC" />
+		<result property="status" column="STATUS" />
+		<result property="basicId" column="BASIC_ID" />
+		<result property="gmtCreate" column="GMT_CREATE" />
+		<result property="gmtModify" column="GMT_MODIFY" />
+		<result property="lastHeartBeat" column="LAST_HEART_BEAT" />
+		<result property="port" column="PORT" />
+		<result property="memo" column="MEMO" />
+	</resultMap>
+
+	<select id="getSequenceForUpdate" resultType="String">
+		<![CDATA[ 
+				SELECT SEQ_C_IP_INFO.NEXTVAL FROM DUAL FOR UPDATE
+			  ]]>
+	</select>
+
+	<insert id="addIp" parameterType="com.huifu.configCenter.dal.model.CIpInfoDO">
+		INSERT INTO
+		C_IP_INFO(IP_ID,IP,MAC,STATUS,BASIC_ID,GMT_CREATE,GMT_MODIFY,PORT,MEMO)
+		VALUES
+		(#{ipId},#{ip},#{mac},#{status},#{basicId},sysdate(),sysdate(),#{port},#{memo})
+	</insert>
+
+	<select id="getIpInfosByBasicID" resultType="com.huifu.configCenter.dal.model.CIpInfoDO"
+		resultMap="cIpInfoDO">
+		SELECT
+		IP.IP_ID,
+		IP.IP,
+		IP.MAC,
+		IP.STATUS,
+		IP.BASIC_ID,
+		IP.GMT_CREATE,
+		IP.GMT_MODIFY,
+		IP.PORT,
+		IP.MEMO
+		FROM
+		C_IP_INFO IP
+		WHERE
+		IP.BASIC_ID=#{0}
+	</select>
+
+	<select id="getIpInfoByIp" resultType="com.huifu.configCenter.dal.model.CIpInfoDO"
+		resultMap="cIpInfoDO">
+		SELECT
+		IP.IP_ID,
+		IP.IP,
+		IP.MAC,
+		IP.STATUS,
+		IP.BASIC_ID,
+		IP.GMT_CREATE,
+		IP.GMT_MODIFY,
+		IP.PORT,
+		IP.MEMO
+		FROM
+		C_IP_INFO IP
+		WHERE
+		IP.IP=#{0}
+	</select>
+
+	<select id="getIpInfosBySystemName" resultType="com.huifu.configCenter.dal.model.CIpInfoDO"
+		resultMap="cIpInfoDO">
+		SELECT
+		IP.IP_ID,
+		IP.IP,
+		IP.MAC,
+		IP.STATUS,
+		IP.BASIC_ID,
+		IP.GMT_CREATE,
+		IP.GMT_MODIFY,
+		IP.PORT,
+		IP.MEMO
+		FROM
+		C_IP_INFO IP
+		INNER JOIN
+		C_BASIC_INFO BI
+		ON
+		BI.BASIC_ID= IP. BASIC_ID
+		WHERE
+		BI.PROJECT_NAME=#{0}
+		AND
+		BI.ENVIRONMENT=#{1}
+		<if test="1 != null and 1 != ''">
+			AND IP.STATUS = #{2}
+		</if>
+	</select>
+
+	<update id="updateIpStatus">
+		UPDATE
+		C_IP_INFO IP
+		SET
+		IP.STATUS=#{1}
+		,IP.GMT_MODIFY=sysdate()
+		WHERE IP.IP=#{0}
+	</update>
+
+</mapper>

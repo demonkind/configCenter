@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.huifu.configCenter.dal.dao.CConfigInfoDAO">
+	<resultMap type="com.huifu.configCenter.dal.model.CConfigInfoDO"
+		id="cConfigInfoDO">
+		<id property="configId" column="CONFIG_ID" />
+		<result property="basicId" column="BASIC_ID" />
+		<result property="configKey" column="CONFIG_KEY" />
+		<result property="configValue" column="CONFIG_VALUE" />
+		<result property="gmtCreate" column="GMT_CREATE" />
+		<result property="gmtModify" column="GMT_MODIFY" />
+		<result property="memo" column="MEMO" />
+	</resultMap>
+
+	<select id="getSequenceForUpdate" resultType="String">
+		<![CDATA[ 
+				SELECT _nextval('C_CONFIG_ID'); 
+			  ]]>
+	</select>
+
+	<select id="getConfigInfoByBasicID" resultType="com.huifu.configCenter.dal.model.CConfigInfoDO"
+		resultMap="cConfigInfoDO">
+		SELECT
+		CI.CONFIG_ID,
+		CI.BASIC_ID,
+		CI.CONFIG_KEY,
+		CI.CONFIG_VALUE,
+		CI.GMT_CREATE,
+		CI.GMT_MODIFY,
+		CI.MEMO
+		FROM
+		C_CONFIG_INFO
+		CI
+		WHERE
+		CI.BASIC_ID=#{0}
+	</select>
+
+	<select id="getByKey" resultType="com.huifu.configCenter.dal.model.CConfigInfoDO"
+		resultMap="cConfigInfoDO">
+		SELECT
+		CI.CONFIG_ID,
+		CI.BASIC_ID,
+		CI.CONFIG_KEY,
+		CI.CONFIG_VALUE,
+		CI.GMT_CREATE,
+		CI.GMT_MODIFY,
+		CI.MEMO
+		FROM
+		C_CONFIG_INFO
+		CI
+		WHERE
+		CI.CONFIG_KEY=#{0}
+	</select>
+
+	<insert id="addConfigInfo" parameterType="com.huifu.configCenter.dal.model.CConfigInfoDO">
+		INSERT INTO
+		C_CONFIG_INFO
+		(CONFIG_ID,BASIC_ID,CONFIG_KEY,CONFIG_VALUE,GMT_CREATE,GMT_MODIFY,MEMO)
+		VALUES
+		(#{configId},#{basicId},#{configKey},#{configValue},sysdate(),sysdate(),
+		#{memo,jdbcType=VARCHAR})
+	</insert>
+
+	<update id="updateConfigInfo" parameterType="com.huifu.configCenter.dal.model.CConfigInfoDO">
+		UPDATE
+		C_CONFIG_INFO
+		CI
+		SET
+		CI.CONFIG_VALUE=#{configValue},
+		CI.GMT_MODIFY=sysdate()
+		WHERE
+		CI.CONFIG_ID=#{configId}
+	</update>
+</mapper>
